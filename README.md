@@ -1,4 +1,4 @@
-# mp_filter_prep
+# vidfilter_scripter
 
 An mpv front-end which creates a mencoder script with video adjustments.
 
