@@ -45,6 +45,7 @@ PARAMS = {
 		'gamma'		: Param(	0.1,	5.0,		1.0,	'{0:.2f}')
 }
 SLIDER_MAX = 200
+APP_PATH = dirname(__file__)
 
 class Parameter:
 
@@ -71,11 +72,13 @@ class MainWindow(QMainWindow):
 	def __init__(self, options):
 		super().__init__()
 		with ShutUpQT():
-			uic.loadUi(join(dirname(__file__), 'main_window.ui'), self)
+			uic.loadUi(join(APP_PATH, 'res', 'main_window.ui'), self)
 		sc = QShortcut(QKeySequence('Ctrl+Q'), self)
 		sc.activated.connect(self.close)
 		sc = QShortcut(QKeySequence('ESC'), self)
 		sc.activated.connect(self.close)
+		sc = QShortcut(QKeySequence('F5'), self)
+		sc.activated.connect(set_application_style)
 
 		self.mouse_controls_position = False
 
@@ -170,7 +173,7 @@ class MakeDialog(QDialog):
 	def __init__(self, parent):
 		super().__init__(parent)
 		with ShutUpQT():
-			uic.loadUi(join(dirname(__file__), 'make_dialog.ui'), self)
+			uic.loadUi(join(APP_PATH, 'res', 'make_dialog.ui'), self)
 		sc = QShortcut(QKeySequence('ESC'), self)
 		sc.activated.connect(self.close)
 		self.spn_length.setMaximum(min(240, self.parent().video_duration))
@@ -281,6 +284,11 @@ class MakeDialog(QDialog):
 				fob.write(self.te_script.toPlainText())
 
 
+def set_application_style():
+	with open(join(APP_PATH, 'res', 'style.css'), 'r', encoding = 'utf-8') as cssfile:
+		QApplication.instance().setStyleSheet(cssfile.read())
+
+
 def main():
 	"""
 	Entry point, easy to reference from bin script.
@@ -298,10 +306,12 @@ def main():
 	logging.basicConfig(level = log_level, format = log_format)
 
 	app = QApplication([])
+	set_application_style()
 	setlocale(LC_NUMERIC, 'C')
 	main_window = MainWindow(options)
 	main_window.show()
 	sys.exit(app.exec())
+
 
 if __name__ == "__main__":
 	main()

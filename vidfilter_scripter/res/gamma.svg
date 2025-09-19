@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg width="24" height="24" viewBox="0 0 24 24" id="svg2" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs>
     <linearGradient id="linearGradient9763">
-      <stop style="stop-color:#000000;stop-opacity:1;" offset="0" id="stop9759" />
-      <stop style="stop-color:#8e8e8e;stop-opacity:1;" offset="0.284467" id="stop10343" />
-      <stop style="stop-color:#ffffff;stop-opacity:1" offset="1" id="stop9761" />
+      <stop style="stop-stop-opacity:1;" offset="0" id="stop9759" />
+      <stop style="stop-color:#696969;stop-opacity:1;" offset="0.3" id="stop10343" />
+      <stop style="stop-color:#F5F5F5;stop-opacity:1" offset="1" id="stop9761" />
     </linearGradient>
   </defs>
   <g id="layer5" style="display:inline">
-    <rect style="color:#000000;overflow:visible;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#b2b2c0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="rect8692" width="21" height="21" x="1.5" y="1.5" />
-    <path style="color:#000000;overflow:visible;fill:url(#linearGradient9763);fill-opacity:1;fill-rule:evenodd;stroke:#00004a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 1.5,22.5 h 21 v -21 c -3.9619,11.4603 -11.8612,17.1401 -21,21 z" id="path9209" />
+    <rect style="fill:none;stroke:#D7D7DE;stroke-width:1.5" id="rect8692" width="21" height="21" x="1.5" y="1.5" />
+    <path style="fill:url(#linearGradient9763);fill-rule:evenodd;stroke:#C1C1C7;stroke-width:1.5;stroke-linejoin:bevel;stroke-miterlimit:4" d="m 1.5,22.5 h 21 v -21 c -3.9619,11.4603 -11.8612,17.1401 -21,21 z" />
   </g>
 </svg>
