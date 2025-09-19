@@ -149,7 +149,7 @@
               <string> sec.</string>
              </property>
              <property name="minimum">
-              <number>30</number>
+              <number>20</number>
              </property>
              <property name="maximum">
               <number>240</number>

@@ -77,6 +77,8 @@ class MainWindow(QMainWindow):
 		sc = QShortcut(QKeySequence('ESC'), self)
 		sc.activated.connect(self.close)
 
+		self.mouse_controls_position = False
+
 		self.frm_video.setAttribute(Qt.WA_DontCreateNativeAncestors)
 		self.frm_video.setAttribute(Qt.WA_NativeWindow)
 		wid = self.frm_video.winId()
@@ -84,7 +86,6 @@ class MainWindow(QMainWindow):
 			wid = str(int(self.frm_video.winId())),
 			log_handler = print #, loglevel = 'debug'
 		)
-		self.mpv.command('keybind', 'MBTN_LEFT', 'cycle fullscreen')
 
 		self.parameters = { var: Parameter(var, rng) for var, rng in PARAMS.items() }
 		self.sliders = { var: getattr(self, 'sld_' + var) for var in PARAMS }
@@ -103,11 +104,11 @@ class MainWindow(QMainWindow):
 		self.b_play.toggled.connect(self.slot_play)
 		self.b_okay.clicked.connect(self.slot_create_script)
 		self.mpv.observe_property('percent-pos', self.player_pos_change)
+		self.mpv.observe_property('duration', self.player_duration_change)
 		self.sld_position.sliderPressed.connect(self.slot_pos_press)
 		self.sld_position.sliderReleased.connect(self.slot_pos_release)
 		self.sld_position.sliderMoved.connect(self.slot_pos_moved)
 		self.sld_position.setTracking(True)
-		self.mouse_controls_position = False
 
 		if options.Filename:
 			self.filename = options.Filename
@@ -133,6 +134,9 @@ class MainWindow(QMainWindow):
 			return
 		with SigBlock(self.sld_position):
 			self.sld_position.setValue(int(percent * 10))
+
+	def player_duration_change(self, _, duration):
+		self.video_duration = round(duration) if duration else None
 
 	def slot_slider_value_changed(self, var, value):
 		self.parameters[var].set_from_slider_value(value)
@@ -169,8 +173,11 @@ class MakeDialog(QDialog):
 			uic.loadUi(join(dirname(__file__), 'make_dialog.ui'), self)
 		sc = QShortcut(QKeySequence('ESC'), self)
 		sc.activated.connect(self.close)
-		self.te_start.setMaximumTime(QTime(0, 30))
-		self.te_start.setTime(QTime(0, 5))
+		self.spn_length.setMaximum(min(240, self.parent().video_duration))
+		start_max = self.parent().video_duration - 30
+		self.te_start.setMaximumTime(QTime(0, start_max // 60, start_max % 60))
+		start = min(start_max, self.parent().video_duration // 4, 5 * 60)
+		self.te_start.setTime(QTime(0, start // 60, start % 60))
 		self.cmb_height.addItems(['360p', '480p', '640p', '720p', '1080p'])
 		self.cmb_height.setCurrentText('640p')
 		self.chk_test.toggled.connect(self.slot_test_mode_changed)
@@ -280,7 +287,7 @@ def main():
 	"""
 	parser = argparse.ArgumentParser()
 	parser.epilog = __doc__
-	parser.add_argument('Filename', type = str, nargs = '?',
+	parser.add_argument('Filename', type = str,
 		help = 'Video file to setup for reencoding.')
 	parser.add_argument("--verbose", "-v", action = "store_true",
 		help = "Show more detailed debug information.")
