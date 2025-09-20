@@ -44,7 +44,7 @@ PARAMS = {
 		'saturation': Param(	0.0,	3.0,		1.0,	'{0:.2f}'),
 		'gamma'		: Param(	0.1,	5.0,		1.0,	'{0:.2f}')
 }
-SLIDER_MAX = 200
+SLIDER_MAX = 325
 APP_PATH = dirname(__file__)
 
 class Parameter:

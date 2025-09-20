@@ -3,23 +3,66 @@ QWidget {
 	color: #C0C0C0;
 }
 
-QPushButton, QLabel {
-	border-radius: 7px;
+QWidget:disabled {
+	color: #7D7D7D;
+}
+
+QPushButton, QSlider::handle, #frm_adjustments {
+	border-top: 1px solid #6B6B6B;
+	border-left: 1px solid #4A4A4A;
+	border-right: 1px solid #2E2E2E;
+	border-bottom: 1px solid #000000;
+}
+
+
+QScrollBar::handle {
+	border-top: 1px solid #636363;
+	border-left: 1px solid #4A4A4A;
+	border-right: 1px solid #2E2E2E;
+	border-bottom: 1px solid #000000;
+}
+
+QScrollBar::add-page, QScrollBar::sub-page {
+	border-top: 2px solid #000000;
+	border-left: 2px solid #2E2E2E;
+	border-right: 2px solid #4A4A4A;
+	border-bottom: 2px solid #636363;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+	border: none;
+}
+
+QScrollBar:vertical {
+	width: 15px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+	height: 0px;
 }
 
 QPushButton {
-	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #424242, stop:0.25 #4F4F4F, stop:1 #2E2E2E);
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:0,
+		y2:1,
+		stop:0 #474747,
+		stop:0.5 #383838,
+		stop:1 #333333);
+	border-radius: 7px;
 }
 
 QPushButton:checked, QPushButton:pressed {
-	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #212121, stop:0.2 #303030, stop:0.8 #454545, stop:1 #787878);
-}
-
-QPushButton, QFrame, QSlider::handle {
-	border-top: 1px solid #707070;
-	border-left: 1px solid #636363;
-	border-right: 1px solid #2E2E2E;
-	border-bottom: 1px solid #000000;
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:0,
+		y2:1,
+		stop:0 #212121,
+		stop:0.2 #303030,
+		stop:0.8 #454545,
+		stop:1 #787878);
 }
 
 QPushButton, QFrame {
@@ -27,10 +70,10 @@ QPushButton, QFrame {
 	font-size: 13px;
 }
 
-QSlider::groove {
+QSlider::groove, QCheckBox::indicator {
 	border-top: 1px solid #000000;
 	border-left: 1px solid #2E2E2E;
-	border-right: 1px solid #636363;
+	border-right: 1px solid #545454;
 	border-bottom: 1px solid #707070;
 }
 
@@ -39,17 +82,41 @@ QSlider::handle {
 }
 
 QSlider:vertical {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:0.1, stop:0 #363636, stop:0.25 #404040, stop:0.75 #363636, stop:1 #333333);
+	background: qlineargradient(x1:0,
+		y1:0,
+		x2:1,
+		y2:0.1,
+		stop:0 #3B3B3B,
+		stop:0.2 #404040,
+		stop:0.4 #363636,
+		stop:0.85 #363636,
+		stop:1 #2E2E2E);
 }
 
 QSlider::groove:vertical {
-	width: 8px;
+	width: 6px;
 	margin: 2px 0;
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1A1A1A, stop:0.25 #404040, stop:0.5 #545454, stop:1 #525252);
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:1,
+		y2:0,
+		stop:0 #1A1A1A,
+		stop:0.4 #303030,
+		stop:0.6 #303030,
+		stop:1 #363636);
 }
 
 QSlider::handle:vertical {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #6C6375, stop:0.2 #8F8C6E, stop:0.45 #7C7980, stop:1 #31253D);
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:1,
+		y2:1,
+		stop:0 #6C6375,
+		stop:0.2 #8F8C6E,
+		stop:0.45 #7C7980,
+		stop:1 #31253D);
 	width: 18px;
 	height: 8px;
 	margin: 0 -7px;
@@ -57,10 +124,20 @@ QSlider::handle:vertical {
 
 #frm_adjustments QLabel {
 	font-size: 11px;
+	border-radius: 7px;
 }
 
 QSlider:horizontal {
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #363636, stop:0.3 #424242, stop:1 #303030);
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:0,
+		y2:1,
+		stop:0 #363636,
+		stop:0.2 #424242,
+		stop:0.4 #363636,
+		stop:0.85 #363636,
+		stop:1 #1A1A1A);
 }
 
 QSlider::groove:horizontal {
@@ -69,9 +146,20 @@ QSlider::groove:horizontal {
 }
 
 QSlider::handle:horizontal {
-	background: qlineargradient(x1:0, y1:0, x2:0.1, y2:1, stop:0 #736D7A, stop:0.3 #8A8A87, stop:0.8 #5F5B63, stop:1 #392D45);
+	background: qlineargradient(
+		x1:0,
+		y1:0,
+		x2:0.1,
+		y2:1,
+		stop:0 #736D7A,
+		stop:0.3 #8A8A87,
+		stop:0.8 #5F5B63,
+		stop:1 #392D45);
 	height: 18px;
 	width: 12px;
 	margin: -7px 0;
 }
 
+QCheckBox::indicator:checked {
+	background: #BF7C00;
+}

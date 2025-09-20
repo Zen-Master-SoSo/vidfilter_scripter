@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Create Script</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="bottomMargin">
@@ -38,7 +38,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
-        <number>4</number>
+        <number>5</number>
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -66,7 +66,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cmb_height"/>
+          <widget class="QComboBox" name="cmb_height">
+           <property name="minimumSize">
+            <size>
+             <width>105</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
