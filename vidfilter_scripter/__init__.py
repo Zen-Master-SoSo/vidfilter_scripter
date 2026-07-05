@@ -35,7 +35,7 @@ from PyQt5.QtGui import QKeySequence, QIcon
 from qt_extras import SigBlock, ShutUpQT, exceptions_hook
 
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 Param = namedtuple('Param',	[	'min',	'max',	'default',	'format'])
 PARAMS = {
