@@ -5,7 +5,10 @@ readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
 dynamic = ["version", "description"]
-dependencies = [ "python-mpv >= 1.0.7" ]
+dependencies = [
+	"python-mpv >= 1.0.7",
+	"soso_qt_extras >= 1.7.0"
+]
 
 [project.urls]
 Home = "https://github.com/Zen-Master-SoSo/vidfilter_scripter"

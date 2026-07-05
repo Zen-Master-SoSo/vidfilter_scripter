@@ -32,7 +32,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QDir
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QShortcut, QWidget
 from PyQt5.QtGui import QKeySequence, QIcon
 
-from qt_extras import SigBlock, ShutUpQT
+from qt_extras import SigBlock, ShutUpQT, exceptions_hook
 
 
 __version__ = "1.1.4"
@@ -306,6 +306,7 @@ def main():
 	logging.basicConfig(level = log_level, format = log_format)
 
 	app = QApplication([])
+	sys.excepthook = exceptions_hook
 	set_application_style()
 	setlocale(LC_NUMERIC, 'C')
 	main_window = MainWindow(options)
