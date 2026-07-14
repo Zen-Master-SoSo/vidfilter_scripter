@@ -27,7 +27,7 @@ from collections import namedtuple
 from functools import partial
 from mpv import MPV
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QDir
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QTimer, QDir
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QShortcut, QWidget
 from PyQt5.QtGui import QKeySequence, QIcon
 from qt_extras import SigBlock, ShutUpQT, exceptions_hook
@@ -86,11 +86,11 @@ class MainWindow(QMainWindow):
 	Main interface, hosting MPV instance.
 	"""
 
-	def __init__(self, options):
+	def __init__(self, filename):
 		super().__init__()
 		with ShutUpQT():
 			uic.loadUi(join(APP_PATH, 'res', 'main_window.ui'), self)
-		install()
+		self.filename = filename
 
 		sc = QShortcut(QKeySequence('Ctrl+Q'), self)
 		sc.activated.connect(self.close)
@@ -141,8 +141,18 @@ class MainWindow(QMainWindow):
 		self.sld_position.sliderMoved.connect(self.slot_pos_moved)
 		self.sld_position.setTracking(True)
 
-		self.filename = options.Filename
-		self.mpv.play(self.filename)
+		install()
+		QTimer.singleShot(0, self.layout_complete)
+
+	@pyqtSlot()
+	def layout_complete(self):
+		if not self.filename:
+			self.filename, _ = QFileDialog.getOpenFileName(self,
+				"Open a video file", QDir.homePath())
+		if self.filename:
+			self.mpv.play(self.filename)
+		else:
+			self.close()
 
 	@pyqtSlot()
 	def slot_pos_press(self):

@@ -33,13 +33,12 @@ def main():
 	"""
 	parser = argparse.ArgumentParser()
 	parser.epilog = __doc__
-	parser.add_argument('Filename', type = str,
+	parser.add_argument('Filename', type = str, nargs = '?',
 		help = 'Video file to setup for reencoding.')
 	parser.add_argument("--verbose", "-v", action = "store_true",
 		help = "Show more detailed debug information.")
 	options = parser.parse_args()
-	#log_level = logging.DEBUG if options.verbose else logging.ERROR
-	log_level = logging.DEBUG
+	log_level = logging.DEBUG if options.verbose else logging.ERROR
 	log_format = "[%(filename)24s:%(lineno)4d] %(levelname)-8s %(message)s"
 	logging.basicConfig(level = log_level, format = log_format)
 
@@ -47,7 +46,7 @@ def main():
 	sys.excepthook = exceptions_hook
 	set_application_style()
 	setlocale(LC_NUMERIC, 'C')
-	main_window = MainWindow(options)
+	main_window = MainWindow(options.Filename)
 	main_window.show()
 	sys.exit(app.exec())
 
