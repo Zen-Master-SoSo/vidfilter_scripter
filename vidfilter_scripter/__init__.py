@@ -26,16 +26,15 @@ from locale import setlocale, LC_NUMERIC
 from collections import namedtuple
 from functools import partial
 from mpv import MPV
-
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QDir
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QShortcut, QWidget
 from PyQt5.QtGui import QKeySequence, QIcon
-
 from qt_extras import SigBlock, ShutUpQT, exceptions_hook
-
+from xdg_soso import XDGSetup, is_xdg
 
 __version__ = "1.1.5"
+
 
 Param = namedtuple('Param',	[	'min',	'max',	'default',	'format'])
 PARAMS = {
@@ -47,7 +46,22 @@ PARAMS = {
 SLIDER_MAX = 325
 APP_PATH = dirname(__file__)
 
+
+def install():
+	if is_xdg():
+		xdg = XDGSetup('vidfilter_scripter', 'Vidfilter Scripter')
+		xdg.comment = "An mpv front-end which creates a mencoder script with video adjustments."
+		xdg.application_icon = join(dirname(__file__), 'res', 'icon.svg')
+		xdg.categories = ['AudioVideo', 'AudioVideoEditing', 'Video']
+		xdg.keywords = ['Video', 'Settings', 'Brightness', 'Contrast', 'Brighten',
+			'Dim', 'ffmpeg', 'mpv', 'Script creator']
+		xdg.install()
+
+
 class Parameter:
+	"""
+	An abstraction of one of the filter parameters.
+	"""
 
 	def __init__(self, var, rng):
 		self.var = var
@@ -68,26 +82,37 @@ class Parameter:
 
 
 class MainWindow(QMainWindow):
+	"""
+	Main interface, hosting MPV instance.
+	"""
 
 	def __init__(self, options):
 		super().__init__()
 		with ShutUpQT():
 			uic.loadUi(join(APP_PATH, 'res', 'main_window.ui'), self)
+		install()
+
 		sc = QShortcut(QKeySequence('Ctrl+Q'), self)
 		sc.activated.connect(self.close)
 		sc = QShortcut(QKeySequence('ESC'), self)
 		sc.activated.connect(self.close)
 		sc = QShortcut(QKeySequence('F5'), self)
 		sc.activated.connect(set_application_style)
+		sc = QShortcut(QKeySequence('SPACE'), self)
+		sc.activated.connect(self.toggle_play)
+		sc = QShortcut(QKeySequence('RIGHT'), self)
+		sc.activated.connect(self.nudge_forwards)
+		sc = QShortcut(QKeySequence('LEFT'), self)
+		sc.activated.connect(self.nudge_backwards)
 
 		self.mouse_controls_position = False
 
 		self.frm_video.setAttribute(Qt.WA_DontCreateNativeAncestors)
 		self.frm_video.setAttribute(Qt.WA_NativeWindow)
-		wid = self.frm_video.winId()
 		self.mpv = MPV(
-			wid = str(int(self.frm_video.winId())),
-			log_handler = print #, loglevel = 'debug'
+			wid = int(self.frm_video.winId()),
+			log_handler = print,
+			loglevel = 'fatal'
 		)
 
 		self.parameters = { var: Parameter(var, rng) for var, rng in PARAMS.items() }
@@ -106,6 +131,9 @@ class MainWindow(QMainWindow):
 
 		self.b_play.toggled.connect(self.slot_play)
 		self.b_okay.clicked.connect(self.slot_create_script)
+
+		self.video_duration = None
+		self.percent_pos = None
 		self.mpv.observe_property('percent-pos', self.player_pos_change)
 		self.mpv.observe_property('duration', self.player_duration_change)
 		self.sld_position.sliderPressed.connect(self.slot_pos_press)
@@ -113,32 +141,60 @@ class MainWindow(QMainWindow):
 		self.sld_position.sliderMoved.connect(self.slot_pos_moved)
 		self.sld_position.setTracking(True)
 
-		if options.Filename:
-			self.filename = options.Filename
-			self.mpv.play(self.filename)
-		else:
-			self.filename = 'nofile.mp4'
+		self.filename = options.Filename
+		self.mpv.play(self.filename)
 
 	@pyqtSlot()
 	def slot_pos_press(self):
+		"""
+		Triggered by the user pressing mouse on the position slider.
+		"""
 		self.mouse_controls_position = True
 
 	@pyqtSlot()
 	def slot_pos_release(self):
+		"""
+		Triggered by the user releasing the mouse from the position slider.
+		"""
 		self.mouse_controls_position = False
 
 	@pyqtSlot(int)
 	def slot_pos_moved(self, value):
-		assert self.mouse_controls_position
+		"""
+		Responds to the user moving the mouse while pressed over the position slider.
+		"""
 		self.mpv.command('set', 'percent-pos', str(value / 10))
 
+	def nudge_forwards(self):
+		"""
+		Triggered by the user pressing the "cursor right" key
+		"""
+		value = self.percent_pos + 5.0
+		if value < 100.0:
+			self.mpv.command('set', 'percent-pos', value)
+
+	def nudge_backwards(self):
+		"""
+		Triggered by the user pressing the "cursor left" key
+		"""
+		value = self.percent_pos - 5.0
+		if value > 0.0:
+			self.mpv.command('set', 'percent-pos', value)
+
 	def player_pos_change(self, _, percent):
+		"""
+		Responds to position change reported by MPV
+		"""
+		self.percent_pos = percent
 		if self.mouse_controls_position or percent is None:
 			return
 		with SigBlock(self.sld_position):
 			self.sld_position.setValue(int(percent * 10))
 
 	def player_duration_change(self, _, duration):
+		"""
+		Responds to MPV reporting the duration of the loaded video.
+		"""
 		self.video_duration = round(duration) if duration else None
 
 	def slot_slider_value_changed(self, var, value):
@@ -150,6 +206,12 @@ class MainWindow(QMainWindow):
 	def slot_reset_var(self, var):
 		self.parameters[var].value = PARAMS[var].default
 		self.sliders[var].setValue(self.parameters[var].slider_value())
+
+	def toggle_play(self):
+		"""
+		Toggles play/pause depending on the state of the play button.
+		"""
+		self.b_play.click()
 
 	@pyqtSlot(bool)
 	def slot_play(self, state):
@@ -164,11 +226,15 @@ class MainWindow(QMainWindow):
 	def eq_filter(self):
 		return 'eq=' + ':'.join(f'{p.var}={p.label()}' for p in self.parameters.values())
 
+	# pylint: disable-next = invalid-name
 	def closeEvent(self, _):
 		self.mpv.terminate()
 
 
 class MakeDialog(QDialog):
+	"""
+	Popup dialog which displays and saves the finished bash/ffmpeg script.
+	"""
 
 	def __init__(self, parent):
 		super().__init__(parent)
@@ -192,15 +258,15 @@ class MakeDialog(QDialog):
 		self.generate_script()
 
 	@pyqtSlot(str)
-	def slot_height_changed(self, text):
+	def slot_height_changed(self, _):
 		self.generate_script()
 
 	@pyqtSlot(QTime)
-	def start_time_changed(self, time):
+	def start_time_changed(self, _):
 		self.generate_script()
 
 	@pyqtSlot(int)
-	def test_len_changed(self, value):
+	def test_len_changed(self, _):
 		self.generate_script()
 
 	@pyqtSlot(bool)
@@ -223,10 +289,10 @@ class MakeDialog(QDialog):
 			video_settings = '-b:v 1200k -maxrate 1500k -bufsize 2048k'
 		elif height == '480p':
 			video_settings = '-b:v 675k -maxrate 840k -bufsize 1024k'
-		elif height == '360p':
+		else:
 			video_settings = '-vprofile baseline -b:v 300k -maxrate 375k -bufsize 512k'
 
-		path, ext = splitext(infile)
+		path, _ = splitext(infile)
 		outfile = f'{path}-{height}.mp4'
 		height = height.rstrip('p')
 		video_filter = f'-vf scale=-2:{height},' + self.parent().eq_filter()
@@ -280,7 +346,7 @@ class MakeDialog(QDialog):
 			"Bash script (*.sh)"
 		)
 		if filename:
-			with open(filename, 'w') as fob:
+			with open(filename, 'w', encoding = 'utf-8') as fob:
 				fob.write(self.te_script.toPlainText())
 
 
@@ -288,33 +354,5 @@ def set_application_style():
 	with open(join(APP_PATH, 'res', 'style.css'), 'r', encoding = 'utf-8') as cssfile:
 		QApplication.instance().setStyleSheet(cssfile.read())
 
-
-def main():
-	"""
-	Entry point, easy to reference from bin script.
-	"""
-	parser = argparse.ArgumentParser()
-	parser.epilog = __doc__
-	parser.add_argument('Filename', type = str,
-		help = 'Video file to setup for reencoding.')
-	parser.add_argument("--verbose", "-v", action = "store_true",
-		help = "Show more detailed debug information.")
-	options = parser.parse_args()
-	#log_level = logging.DEBUG if options.verbose else logging.ERROR
-	log_level = logging.DEBUG
-	log_format = "[%(filename)24s:%(lineno)4d] %(levelname)-8s %(message)s"
-	logging.basicConfig(level = log_level, format = log_format)
-
-	app = QApplication([])
-	sys.excepthook = exceptions_hook
-	set_application_style()
-	setlocale(LC_NUMERIC, 'C')
-	main_window = MainWindow(options)
-	main_window.show()
-	sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-	main()
 
 #  end vid_filter_scripter/__init__.py

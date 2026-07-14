@@ -7,14 +7,15 @@ classifiers = ["License :: OSI Approved :: GNU General Public License v3 or late
 dynamic = ["version", "description"]
 dependencies = [
 	"python-mpv >= 1.0.7",
-	"soso_qt_extras >= 1.7.0"
+	"soso_qt_extras >= 1.7.0",
+	"xdg_soso"
 ]
 
 [project.urls]
 Home = "https://github.com/Zen-Master-SoSo/vidfilter_scripter"
 
 [project.scripts]
-vidfilter-scripter = "vidfilter_scripter:main"
+vidfilter-scripter = "vidfilter_scripter.__main__:main"
 
 [build-system]
 requires = ["flit_core >=3.2,<4"]
