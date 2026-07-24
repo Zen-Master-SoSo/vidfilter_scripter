@@ -24,7 +24,8 @@ import sys, logging, argparse
 from locale import setlocale, LC_NUMERIC
 from PyQt5.QtWidgets import QApplication
 from qt_extras import exceptions_hook
-from . import MainWindow, set_application_style
+from xdg_soso import is_xdg
+from . import MainWindow, VidfilterScripterSetup, set_application_style
 
 
 def main():
@@ -35,6 +36,11 @@ def main():
 	parser.epilog = __doc__
 	parser.add_argument('Filename', type = str, nargs = '?',
 		help = 'Video file to setup for reencoding.')
+	if is_xdg():
+		parser.add_argument("--install", "-i", action = "store_true",
+			help = "Install icons and file associations for your desktop.")
+		parser.add_argument("--uninstall", "-u", action = "store_true",
+			help = "Remove icons and file associations.")
 	parser.add_argument("--verbose", "-v", action = "store_true",
 		help = "Show more detailed debug information.")
 	options = parser.parse_args()
@@ -42,13 +48,18 @@ def main():
 	log_format = "[%(filename)24s:%(lineno)4d] %(levelname)-8s %(message)s"
 	logging.basicConfig(level = log_level, format = log_format)
 
-	app = QApplication([])
-	sys.excepthook = exceptions_hook
-	set_application_style()
-	setlocale(LC_NUMERIC, 'C')
-	main_window = MainWindow(options.Filename)
-	main_window.show()
-	sys.exit(app.exec())
+	if options.install:
+		VidfilterScripterSetup().install()
+	elif options.uninstall:
+		VidfilterScripterSetup().uninstall()
+	else:
+		app = QApplication([])
+		sys.excepthook = exceptions_hook
+		set_application_style()
+		setlocale(LC_NUMERIC, 'C')
+		main_window = MainWindow(options.Filename)
+		main_window.show()
+		sys.exit(app.exec())
 
 
 if __name__ == "__main__":

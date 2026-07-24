@@ -31,7 +31,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QTimer, QDir
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QShortcut, QWidget
 from PyQt5.QtGui import QKeySequence, QIcon
 from qt_extras import SigBlock, ShutUpQT, exceptions_hook
-from xdg_soso import XDGSetup, is_xdg
+from xdg_soso import XDGSetup
 
 __version__ = "1.3.0"
 
@@ -47,15 +47,14 @@ SLIDER_MAX = 325
 APP_PATH = dirname(__file__)
 
 
-def install():
-	if is_xdg():
-		xdg = XDGSetup('vidfilter_scripter', 'Vidfilter Scripter')
-		xdg.comment = "An mpv front-end which creates a mencoder script with video adjustments."
-		xdg.application_icon = join(dirname(__file__), 'res', 'icon.svg')
-		xdg.categories = ['AudioVideo', 'AudioVideoEditing', 'Video']
-		xdg.keywords = ['Video', 'Settings', 'Brightness', 'Contrast', 'Brighten',
-			'Dim', 'ffmpeg', 'mpv', 'Script creator']
-		xdg.install()
+class VidfilterScripterSetup(XDGSetup):
+
+	def __init__(self):
+		super().__init__('vidfilter_scripter', 'Vidfilter Scripter')
+		self._comment = "An mpv front-end which creates a mencoder script with video adjustments."
+		self._application_icon = join(dirname(__file__), 'res', 'icon.svg')
+		self._categories = ['AudioVideo', 'AudioVideoEditing', 'Video']
+		self._keywords = ['Video', 'Settings', 'Brightness', 'Contrast', 'ffmpeg', 'mpv']
 
 
 class Parameter:
@@ -141,7 +140,6 @@ class MainWindow(QMainWindow):
 		self.sld_position.sliderMoved.connect(self.slot_pos_moved)
 		self.sld_position.setTracking(True)
 
-		install()
 		QTimer.singleShot(0, self.layout_complete)
 
 	@pyqtSlot()
