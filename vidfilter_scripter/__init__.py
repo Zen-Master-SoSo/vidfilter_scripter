@@ -33,7 +33,7 @@ from PyQt5.QtGui import QKeySequence, QIcon
 from qt_extras import SigBlock, ShutUpQT, exceptions_hook
 from xdg_soso import XDGSetup
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 
 Param = namedtuple('Param',	[	'min',	'max',	'default',	'format'])
