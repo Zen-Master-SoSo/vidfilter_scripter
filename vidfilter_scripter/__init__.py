@@ -51,10 +51,10 @@ class VidfilterScripterSetup(XDGSetup):
 
 	def __init__(self):
 		super().__init__('vidfilter_scripter', 'Vidfilter Scripter')
-		self._comment = "An mpv front-end which creates a mencoder script with video adjustments."
-		self._application_icon = join(dirname(__file__), 'res', 'icon.svg')
-		self._categories = ['AudioVideo', 'AudioVideoEditing', 'Video']
-		self._keywords = ['Video', 'Settings', 'Brightness', 'Contrast', 'ffmpeg', 'mpv']
+		self.comment = "An mpv front-end which creates a mencoder script with video adjustments."
+		self.application_icon = join(dirname(__file__), 'res', 'application_icon.svg')
+		self.categories = ['AudioVideo', 'AudioVideoEditing', 'Video']
+		self.keywords = ['Video', 'Settings', 'Brightness', 'Contrast', 'ffmpeg', 'mpv']
 
 
 class Parameter:
@@ -89,6 +89,7 @@ class MainWindow(QMainWindow):
 		super().__init__()
 		with ShutUpQT():
 			uic.loadUi(join(APP_PATH, 'res', 'main_window.ui'), self)
+		self.setWindowIcon(QIcon(join(APP_PATH, 'res', 'application_icon.svg')))
 		self.filename = filename
 
 		sc = QShortcut(QKeySequence('Ctrl+Q'), self)
