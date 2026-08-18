@@ -25,7 +25,18 @@ from os.path import dirname, join, splitext
 from locale import setlocale, LC_NUMERIC
 from collections import namedtuple
 from functools import partial
-from mpv import MPV
+try:
+	from mpv import MPV
+except OSError as err:
+	sys.stderr.write(str(err) + """
+
+If libmpv is missing, try this:
+
+  $ apt-cache search libmpv
+
+On a newer debian machine, this search returned "libmpv2", which worked for me.
+""")
+	sys.exit(1)
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTime, QTimer, QDir
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QShortcut, QWidget
